@@ -1,10 +1,11 @@
-import pygame, sys, random
+import pygame, sys, random, time, math
 import walls
 from pygame.locals import *
 from locals import *
 
 class Room_Gen(object):
     def __init__(self):
+        self.t = time.time()
         self.room_pos = {}
         self.wallGroup = pygame.sprite.Group()
         
@@ -20,32 +21,49 @@ class Room_Gen(object):
         self.tunnel_length_min = 2  
         self.tunnel_length_max = 10
         
+        self.room_skipped = 0 #Used in order to avoid keyerror checking for room numbers in dictionary, also doubled as a variable
+                              #to check how many rooms were skipped
+        
+        self.last_dir = 0
         self.build_level()
+        print("Room coordinates: {}".format(self.room_pos))
+        print("Room skipped: {}".format(self.room_skipped))
+        print("Time elapsed: {:.2f} seconds".format(time.time() - self.t))
 
     def build_level(self):
         """Randomly builds the whole level!"""
         self.fill_level()
         self.create_rect_room(self.start_room_pos[0], self.start_room_pos[1], self.rand_room_len(), self.rand_room_wid())
-        self.build_another_room(1)
-        self.build_another_room(2)
+        for i in range(1, AMOUNT_OF_ROOMS):
+            if self.build_another_room(i - self.room_skipped):
+                pass
+            else: self.room_skipped += 1
     
     def build_another_room(self, room_number):
-        """Build another room out of the given room number"""
+        """Build another room out of the given room number. Will check whether room location is applicable, if so return True, otherwise False"""
         direction = self.rand_dir()
-        self.build_tun_and_room(room_number, direction)
-        print(self.room_pos)
-        
+        while direction == self.last_dir:
+            direction = self.rand_dir()
+        tun_len = self.rand_tun_len()
+        room_len, room_wid = self.rand_room_len(), self.rand_room_wid()
+        if self.check_applicable_room(room_number, direction, tun_len, room_len, room_wid):
+            self.build_tun_and_room(room_number, direction, tun_len, room_len, room_wid)
+            self.last_dir = self.get_opposite_last_dir(direction)
+
+            print(direction)
+            return True
+        else: return False
     
-    def build_tun_and_room(self, room_number, direction):
-        tunnel_end = self.tunnel_given_direction(room_number, direction, self.rand_tun_len())
+    def build_tun_and_room(self, room_number, direction, tun_len, room_len, room_wid):
+        tunnel_end = self.tunnel_given_direction(room_number, direction, tun_len)
         if direction == "E":
-            self.create_room_east(tunnel_end, self.rand_room_len(), self.rand_room_wid())
+            self.create_room_east(tunnel_end, room_len, room_wid)
         if direction == "W":
-            self.create_room_west(tunnel_end, self.rand_room_len(), self.rand_room_wid())
+            self.create_room_west(tunnel_end, room_len, room_wid)
         if direction == "N":
-            self.create_room_north(tunnel_end, self.rand_room_len(), self.rand_room_wid())
+            self.create_room_north(tunnel_end, room_len, room_wid)
         if direction == "S":
-            self.create_room_south(tunnel_end, self.rand_room_len(), self.rand_room_wid())
+            self.create_room_south(tunnel_end, room_len, room_wid)
     
     def create_wall(self, xPos, yPos):
         """Creates a wall at position (xPos, yPos) on a grid system"""
@@ -67,9 +85,55 @@ class Room_Gen(object):
 
     def rand_dir(self):
         """Chooses a random direction to tunnel a room"""
-        directions = ["N", "S", "W", "E"]
+        directions = ["E", "W", "N", "S"]
         return random.choice(directions)
     
+    def get_opposite_last_dir(self, direction):
+        if direction == "E":
+            return "W"
+        if direction == "W":
+            return "E"
+        if direction == "N":
+            return "S"
+        if direction == "S":
+            return "N"
+    
+    
+    def check_applicable_room(self, room_number, direction, tun_len, room_len, room_wid):
+        applicable = 1
+        room_info = self.room_pos[str(room_number)]
+        if direction == "E":
+            tunnel_start = (room_info[2], random.randrange(room_info[1], room_info[3]))
+            tunnel_end = tunnel_start[0] + tun_len, tunnel_start[1]
+            if tunnel_end[0] + room_len > MAX_XPOS - ROOM_OFFSET:
+                applicable = 0
+            elif tunnel_end[1] - room_wid < ROOM_OFFSET or tunnel_end[1] + room_wid > MAX_YPOS - ROOM_OFFSET:
+                applicable = 0
+        if direction == "W":
+            tunnel_start = (room_info[0] - tun_len, random.randrange(room_info[1], room_info[3]))
+            tunnel_end = tunnel_start[0], tunnel_start[1]
+            if tunnel_end[0] - room_len < ROOM_OFFSET:
+                applicable = 0
+            elif tunnel_end[1] - room_wid < ROOM_OFFSET or tunnel_end[1] + room_wid > MAX_YPOS - ROOM_OFFSET:
+                applicable = 0
+        if direction == "N":
+            tunnel_start = (random.randrange(room_info[0], room_info[2]), room_info[1] - tun_len)
+            tunnel_end = tunnel_start[0], tunnel_start[1]
+            if tunnel_end[1] - room_wid < ROOM_OFFSET:
+                applicable = 0
+            elif tunnel_end[0] - room_len < ROOM_OFFSET or tunnel_end[0] + room_wid > MAX_XPOS - ROOM_OFFSET:
+                applicable = 0
+        if direction == "S":
+            tunnel_start = (random.randrange(room_info[0], room_info[2]), room_info[3])
+            tunnel_end = tunnel_start[0], tunnel_start[1] + tun_len
+            if tunnel_end[1] + room_wid > MAX_YPOS - ROOM_OFFSET:
+                applicable = 0
+            elif tunnel_end[0] - room_len < ROOM_OFFSET or tunnel_end[0] + room_wid > MAX_XPOS - ROOM_OFFSET:
+                applicable = 0
+        
+        if applicable == 1:
+            return True
+        else: return False
     
     """Room creating functions"""
     def create_rect_room(self, xstart, ystart, length, width):
@@ -92,7 +156,9 @@ class Room_Gen(object):
         for i in range(1, 1000):
             if not(str(i) in self.room_pos):
                 self.room_pos[str(i)] = (xPos1, yPos1, xPos2, yPos2)
+                room_number = i
                 break
+        print("{} : {}".format(room_number, self.room_pos[str(room_number)]))
     
     def create_room_east(self, tunnel_end, room_length, room_width):
         room_start = tunnel_end[0], tunnel_end[1] - (room_width - random.randrange(1, room_width + 1))
@@ -133,7 +199,6 @@ class Room_Gen(object):
             tunnel_end = self.tunnel_west(room_key, length, 1)
         if direction == "E":
             tunnel_end = self.tunnel_east(room_key, length, 1)
-        print(direction)
         return tunnel_end
     
     def tunnel_east(self, room_number, length, width):
@@ -142,6 +207,7 @@ class Room_Gen(object):
         tunnel_start = (room_info[2], random.randrange(room_info[1], room_info[3]))
         self.create_tunnel(tunnel_start[0], tunnel_start[1], length, width)
         tunnel_end = tunnel_start[0] + length, tunnel_start[1]
+        #self.draw_tun_arrow("E", tunnel_start, length, tunnel_end)
         return tunnel_end
         
     def tunnel_west(self, room_number, length, width):
@@ -167,3 +233,13 @@ class Room_Gen(object):
         self.create_tunnel(tunnel_start[0], tunnel_start[1], width, length)
         tunnel_end = tunnel_start[0], tunnel_start[1] + length
         return tunnel_end
+    #def draw_tun_arrow(self, direction, tunnel_start, tun_len, tunnel_end):
+    #    if direction == "E":
+    #        pygame.draw.line(window, (0,0,0), (tunnel_start[0]*GRID_SIZE, tunnel_start[1]*GRID_SIZE + GRID_SIZE/2), (tunnel_end[0]*GRID_SIZE, tunnel_end[1]*GRID_SIZE + GRID_SIZE/2))
+    #    if direction == "W":
+    #        pass
+    #    if direction == "N":
+    #        pass
+    #    if direction == "S":
+    #        pass
+    #

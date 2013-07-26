@@ -1,4 +1,4 @@
-import pygame, sys, random
+import pygame, sys, random, math 
 import room_gen
 from pygame.locals import *
 from locals import *
@@ -6,9 +6,10 @@ from locals import *
 pygame.init()
 fpsClock = pygame.time.Clock()
       
+global window
+window = pygame.display.set_mode(SCREEN_SIZE)
 Room = room_gen.Room_Gen()
 
-window = pygame.display.set_mode(SCREEN_SIZE)
 
 wallGroup = pygame.sprite.Group()
 
