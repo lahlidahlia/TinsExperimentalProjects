@@ -1,0 +1,11 @@
+1) make an array that contains the board
+
+2) Get user input
+
+3)Print the board
+
+4)Solve for the next step, ie. making sands move down etc. and print board
+
+5)repeat til sands doesnt move anymore
+
+6)exit.
