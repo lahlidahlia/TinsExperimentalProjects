@@ -14,6 +14,7 @@ public class TopDown {
 	public static boolean finished = false;
 	public FPSCounter FPS;
 	public Player mainPlayer;
+	public Enemy enemy;
 	 //Font used for FPS counter
 	public TrueTypeFont fpsFont;
 	
@@ -36,6 +37,7 @@ public class TopDown {
 		fpsFont = new TrueTypeFont(awtFont, false);
 		FPS = new FPSCounter();
 		mainPlayer = new Player(100, 100, 4, 4, 16, 16);
+		enemy = new Enemy(200, 200, 4, 4, 16, 16);
 		
 	}
 	
@@ -53,6 +55,10 @@ public class TopDown {
 			if(mainPlayer != null){
 				mainPlayer.update();
 				mainPlayer.render();
+			}
+			if(enemy != null){
+				enemy.update();
+				enemy.render();
 			}
 			
 			FPS.tick();
