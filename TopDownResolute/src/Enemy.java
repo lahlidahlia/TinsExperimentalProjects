@@ -3,28 +3,6 @@ import org.newdawn.slick.Color;
 
 
 public class Enemy extends CubeletEntity{
-//	Inherits:
-//
-//	public int totalHeight;
-//	public int totalWidth;
-//	public int x, y;
-//	
-//	protected abstract void render();
-//	protected abstract void update(); 
-//	
-//	public int cubeAmntWidth;  //Amount of cube in the player width  wise
-//	public int cubeAmntHeight; //Amount of cube in the player height wise
-//	public int cubeWidth;      //Width  of individual cube
-//	public int cubeHeight;     //Height of individual cube
-//	public int speed = 5;
-//	
-//
-//	//Keyboard variables, for easy keyboard switch
-//	public static int KEY_MOVE_WEST = Keyboard.KEY_A;
-//	public static int KEY_MOVE_EAST = Keyboard.KEY_D;
-//	public static int KEY_MOVE_NORTH = Keyboard.KEY_W;
-//	public static int KEY_MOVE_SOUTH = Keyboard.KEY_S;
-//	
 	
 	//Variables that let the entity move
 	//Overriding superclass (change from bool to int to let you "queue" up movement)
@@ -51,6 +29,10 @@ public class Enemy extends CubeletEntity{
 		
 		totalWidth  = cubeAmntWidth * cubeWidth;
 		totalHeight = cubeAmntHeight * cubeHeight;
+		
+		//Defining Bounding boxes. TopLeft is already defined in superclass
+		bBox_botRightX = x + totalWidth;
+		bBox_botRightY = y + totalHeight;
 	}
 	
 	public void render(){
@@ -65,13 +47,13 @@ public class Enemy extends CubeletEntity{
 	
 	
 	public void update(){
-//		System.out.println("Time: " + timer);
-//		System.out.println("System time: " + System.currentTimeMillis());
-		if(isTimerDone()){
+		if(isTimerDone()){ //Decide which action to perform every so often
 			chooseAction();
 			setTimer(minActionPause, maxActionPause);
 			System.out.println("Action!");
 		}
+		updateBBox();
+		checkForCollision();
 		move();
 	}
 	
@@ -89,25 +71,44 @@ public class Enemy extends CubeletEntity{
 	
 	public void moveRandom(){
 		if(isMoveWest == 0 && isMoveEast == 0 && isMoveNorth == 0 && isMoveNorth == 0){ //To prevent movements from accumulating when there is movements queued
-			int r = (int) (Math.random() * 50000); //Get a number between 0 and given number
-			int dir = r % 4; //Choosing a random direction
-			
-			int i = r % (maxMove-minMove) + minMove; //Choosing a random amount of distance to move 
-			for(; i != 0; i--){
-				switch(dir){
+			while(true){ //In case you want to rechoose the direction
+				int r = (int) (Math.random() * 50000); //Get a number between 0 and given number
+				int dir = r % 4; //Choosing a random direction
+				
+				int i = r % (maxMove-minMove) + minMove; //Choosing a random amount of distance to move
+				switch(dir){ //This preliminary check is so that the enemy won't spend too much time at the edge of the screen
 				case 0:
-					moveWest();
-					break;
+					if(!canMoveWest) continue;
+					else break;
 				case 1:
-					moveEast();
-					break;
+					if(!canMoveEast) continue;
+					else break;
 				case 2:
-					moveNorth();
-					break;
+					if(!canMoveNorth) continue;
+					else break;
 				case 3:
-					moveSouth();
-					break;
+					if(!canMoveSouth) continue;
+					else break;
+				default:	
+					continue;
 				}
+				for(; i != 0; i--){
+					switch(dir){
+					case 0:
+						moveWest();
+						break;
+					case 1:
+						moveEast();
+						break;
+					case 2:
+						moveNorth();
+						break;
+					case 3:
+						moveSouth();
+						break;
+					}
+				}
+				break; //Break out of the while loop if it executes successfully
 			}
 		}
 	}
@@ -129,19 +130,27 @@ public class Enemy extends CubeletEntity{
 	@Override
 	public void move(){ //Call move() in update() in order to move
 		if(isMoveWest > 0){
-			x -= speed;
+			if(canMoveWest){
+				x -= speed;
+			}
 			isMoveWest--;
 		}
 		if(isMoveEast > 0){
-			x += speed;
+			if(canMoveEast){
+				x += speed;
+			}
 			isMoveEast--;
 		}
 		if(isMoveNorth > 0){
-			y -= speed;
+			if(canMoveNorth){
+				y -= speed;
+			}
 			isMoveNorth--;
 		}
 		if(isMoveSouth > 0){
-			y += speed;
+			if(canMoveSouth){
+				y += speed;
+			}
 			isMoveSouth--;
 		}
 	}

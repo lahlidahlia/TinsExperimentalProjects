@@ -3,35 +3,6 @@ import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.Color;
 
 public class Player extends CubeletEntity{
-//	Inherits:
-//
-//	public int totalHeight;
-//	public int totalWidth;
-//	public int x, y;
-//	
-//	protected abstract void render();
-//	protected abstract void update(); 
-//	
-//	public int cubeAmntWidth;  //Amount of cube in the player width  wise
-//	public int cubeAmntHeight; //Amount of cube in the player height wise
-//	public int cubeWidth;      //Width  of individual cube
-//	public int cubeHeight;     //Height of individual cube
-//	public int speed = 5;
-//	
-//	//Variables that let the entity move
-//	public boolean isMoveWest = false;
-//	public boolean isMoveEast = false;
-//	public boolean isMoveNorth = false;
-//	public boolean isMoveSouth = false;
-//
-//	public void move();	
-//	
-//	public void moveWest(){
-//	public void moveEast(){
-//	public void moveNorth(){
-//	public void moveSouth(){
-	
-	
 	
 	//Keyboard variables, for easy keyboard switch
 	public static int KEY_MOVE_WEST = Keyboard.KEY_A;
@@ -53,12 +24,12 @@ public class Player extends CubeletEntity{
 		
 		totalWidth  = cubeAmntWidth * cubeWidth;
 		totalHeight = cubeAmntHeight * cubeHeight;
-		
 	}
 	
 	
 	
 	public void update(){
+		updateBBox();
 		checkForCollision();
 		move();
 		System.out.println("X: " + x + "Y: " + y);

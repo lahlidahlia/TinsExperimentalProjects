@@ -15,6 +15,11 @@ public abstract class CubeletEntity extends Entity {
 	public int cubeWidth;      //Width  of individual cube
 	public int cubeHeight;     //Height of individual cube
 	public int speed = 5;
+	//Bounding box
+	public int bBox_topLeftX; //topLeftX & Y is unecessary but it's there for usage clarity
+	public int bBox_topLeftY;
+	public int bBox_botRightX; //MAKE SURE TO DEFINE THIS IN SUBCLASS CONSTRUCTOR
+	public int bBox_botRightY;
 	
 	//Variables that let the entity move
 	public boolean isMoveWest = false;
@@ -27,6 +32,10 @@ public abstract class CubeletEntity extends Entity {
 	public boolean canMoveNorth = true;
 	public boolean canMoveSouth = true;
 	
+	
+	///////////////////
+	//MOVEMENT METHODS
+	///////////////////
 	protected void move(){ //Call move() in update() in order to move
 		if(isMoveWest && canMoveWest){
 			x -= speed;
@@ -60,7 +69,19 @@ public abstract class CubeletEntity extends Entity {
 	}
 	
 	
+	
+	
+	/////////////////////
+	//COLLISION CHECKING
+	/////////////////////
 	//superSetter functions for checkCollisions
+	
+	public void updateBBox(){//Call before any collision checking
+		bBox_topLeftX = x;
+		bBox_topLeftY = y;
+		bBox_botRightX = x + totalWidth;
+		bBox_botRightY = y + totalHeight;
+	}
 	protected void checkForCollision(){ //Call in update() before move()
 		canMoveWest = checkWestCollision();
 		canMoveEast = checkEastCollision();
@@ -75,7 +96,7 @@ public abstract class CubeletEntity extends Entity {
 		return true; //True if isn't colliding with anything
 	}
 	protected boolean checkEastCollision(){
-		if(x > Global.SCREEN_WIDTH - speed - totalWidth){
+		if(bBox_botRightX > Global.SCREEN_WIDTH - speed){
 			return false;
 		}
 		return true;
@@ -87,7 +108,7 @@ public abstract class CubeletEntity extends Entity {
 		return true;
 	}
 	protected boolean checkSouthCollision(){
-		if(y > Global.SCREEN_HEIGHT - speed - totalHeight){
+		if(bBox_botRightY > Global.SCREEN_HEIGHT - speed){
 			return false;
 		}
 		return true;
