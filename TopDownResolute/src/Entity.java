@@ -1,6 +1,7 @@
 public abstract class Entity {
-	protected int totalHeight;
-	protected int totalWidth;
+	public int totalHeight;
+	public int totalWidth;
+	public int x, y;
 	
 	protected abstract void render();
 	protected abstract void update();
