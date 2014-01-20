@@ -34,7 +34,12 @@ public class Enemy extends CubeletEntity{
 	public int isMoveSouth = 0;
 	
 	private Color enemyColor = Color.red;
-	private final int maxMove = 200; //Maximum amount of movement distance if randomly chosen to move
+	private final int maxMove = 50; //Maximum amount of movement distance if randomly chosen to move
+	private final int minMove = 30; //Minimum amount of movement distance if randomly chosen to move
+	public long minActionPause = 500; //Minimum time for the enemy to pause inbetween actions
+	public long maxActionPause = 2000; //Maximum time for the enemy to pause inbetween actions
+	public boolean readyToAct = true; //Check if the enemy is ready for an action
+	public long timer = 0; //Used to check whether the system timer exceeds this value
 	//CONSTRUCTOR
 	Enemy(int x, int y, int cubeAmntWidth, int cubeAmntHeight, int cubeWidth, int cubeHeight){
 		this.x = x;
@@ -60,17 +65,19 @@ public class Enemy extends CubeletEntity{
 	
 	
 	public void update(){
-		System.out.println(isMoveWest);
-		System.out.println(isMoveEast);
-		System.out.println(isMoveNorth);
-		System.out.println(isMoveSouth);
-		chooseAction();
+//		System.out.println("Time: " + timer);
+//		System.out.println("System time: " + System.currentTimeMillis());
+		if(isTimerDone()){
+			chooseAction();
+			setTimer(minActionPause, maxActionPause);
+			System.out.println("Action!");
+		}
 		move();
 	}
 	
 	public void chooseAction(){
-		int r = (int) (Math.random() * 50000); //Get a number between 0 and 100
-		int action = r % 3;//Get a random number between 0 and given number (non-inclusive)
+		int r = (int) (Math.random() * 50000); //Get a number between 0 and given number
+		int action = r % 1;//Get a random number between 0 and given number (non-inclusive)
 		switch(action){ //Choosing an action, weighted toward do nothing
 		case 0:
 			moveRandom();
@@ -81,26 +88,41 @@ public class Enemy extends CubeletEntity{
 	} 
 	
 	public void moveRandom(){
-		int r = (int) (Math.random() * 50000); //Get a number between 0 and 100
-		int dir = r % 4; //Choosing a random direction
-		
-		int i = r % maxMove; //Choosing a random amount of distance to move 
-		for(; i != 0; i--){
-			switch(dir){
-			case 0:
-				moveWest();
-				break;
-			case 1:
-				moveEast();
-				break;
-			case 2:
-				moveNorth();
-				break;
-			case 3:
-				moveSouth();
-				break;
+		if(isMoveWest == 0 && isMoveEast == 0 && isMoveNorth == 0 && isMoveNorth == 0){ //To prevent movements from accumulating when there is movements queued
+			int r = (int) (Math.random() * 50000); //Get a number between 0 and given number
+			int dir = r % 4; //Choosing a random direction
+			
+			int i = r % (maxMove-minMove) + minMove; //Choosing a random amount of distance to move 
+			for(; i != 0; i--){
+				switch(dir){
+				case 0:
+					moveWest();
+					break;
+				case 1:
+					moveEast();
+					break;
+				case 2:
+					moveNorth();
+					break;
+				case 3:
+					moveSouth();
+					break;
+				}
 			}
 		}
+	}
+	
+	public void setTimer(long minTimer, long maxTimer){
+		//Set the timer with a random value between minTimer and maxTimer
+		long r = (long) (Math.random() * maxTimer) + (maxTimer - minTimer);
+		long time = r % maxTimer + minTimer;
+		timer = System.currentTimeMillis() + time;
+	}
+	public void setTimer(long time/*in Ms*/){
+		timer = System.currentTimeMillis() + time;
+	}
+	public boolean isTimerDone(){
+		return System.currentTimeMillis() > timer;
 	}
 	
 	
@@ -123,7 +145,6 @@ public class Enemy extends CubeletEntity{
 			isMoveSouth--;
 		}
 	}
-	
 	//Setter functions for movement variables
 	@Override
 	public void moveWest(){
@@ -139,4 +160,5 @@ public class Enemy extends CubeletEntity{
 		isMoveSouth++;
 	}
 }
+
 
