@@ -32,7 +32,7 @@ public class Player extends CubeletEntity{
 		updateBBox();
 		checkForCollision();
 		move();
-		System.out.println("X: " + x + " Y: " + y);
+//		System.out.println("X: " + x + " Y: " + y);
 	}
 	
 	

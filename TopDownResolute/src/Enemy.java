@@ -17,7 +17,7 @@ public class Enemy extends CubeletEntity{
 	public long minActionPause = 500; //Minimum time for the enemy to pause inbetween actions
 	public long maxActionPause = 2000; //Maximum time for the enemy to pause inbetween actions
 	public boolean readyToAct = true; //Check if the enemy is ready for an action
-	public long timer = 0; //Used to check whether the system timer exceeds this value
+	public Timer timer;
 	//CONSTRUCTOR
 	Enemy(int x, int y, int cubeAmntWidth, int cubeAmntHeight, int cubeWidth, int cubeHeight){
 		this.x = x;
@@ -33,6 +33,8 @@ public class Enemy extends CubeletEntity{
 		//Defining Bounding boxes. TopLeft is already defined in superclass
 		bBox_botRightX = x + totalWidth;
 		bBox_botRightY = y + totalHeight;
+		
+		timer = new Timer(); //Creating a new timer
 	}
 	
 	public void render(){
@@ -47,9 +49,9 @@ public class Enemy extends CubeletEntity{
 	
 	
 	public void update(){
-		if(isTimerDone()){ //Decide which action to perform every so often
+		if(timer.isTimerDone()){ //Decide which action to perform every so often
 			chooseAction();
-			setTimer(minActionPause, maxActionPause);
+			timer.setTimer(minActionPause, maxActionPause);
 			System.out.println("Action!");
 		}
 		updateBBox();
@@ -113,18 +115,7 @@ public class Enemy extends CubeletEntity{
 		}
 	}
 	
-	public void setTimer(long minTimer, long maxTimer){
-		//Set the timer with a random value between minTimer and maxTimer
-		long r = (long) (Math.random() * maxTimer) + (maxTimer - minTimer);
-		long time = r % maxTimer + minTimer;
-		timer = System.currentTimeMillis() + time;
-	}
-	public void setTimer(long time/*in Ms*/){
-		timer = System.currentTimeMillis() + time;
-	}
-	public boolean isTimerDone(){
-		return System.currentTimeMillis() > timer;
-	}
+
 	
 	
 	@Override
