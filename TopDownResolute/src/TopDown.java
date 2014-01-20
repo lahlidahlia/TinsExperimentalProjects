@@ -1,12 +1,8 @@
-import java.awt.Font;
-
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11; 
-import org.newdawn.slick.Color;
-import org.newdawn.slick.TrueTypeFont;
 
 public class TopDown {
 	public static boolean finished = false;
@@ -14,7 +10,7 @@ public class TopDown {
 	public Player mainPlayer;
 	public Enemy enemy;
 	 //Font used for FPS counter
-	public TrueTypeFont fpsFont;
+	
 	
 	////////////
 	//VOID MAIN
@@ -31,8 +27,8 @@ public class TopDown {
 	///////////////
 	public void start(){
 		init();
-		Font awtFont = new Font("Serif", Font.PLAIN, 24);
-		fpsFont = new TrueTypeFont(awtFont, false);
+		
+		
 		FPS = new FPSCounter();
 		mainPlayer = new Player(100, 100, 4, 4, 16, 16);
 		enemy = new Enemy(200, 200, 4, 4, 16, 16);
@@ -48,16 +44,17 @@ public class TopDown {
 			GL11.glClearColor(Global.BG_Color.r, Global.BG_Color.g, Global.BG_Color.b ,1);
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 			
-			drawFPS();
+			Text.drawText(FPS.getFPS());
 			pollInput();
-			if(mainPlayer != null){
-				mainPlayer.update();
-				mainPlayer.render();
-			}
 			if(enemy != null){
 				enemy.update();
 				enemy.render();
 			}
+			if(mainPlayer != null){
+				mainPlayer.update();
+				mainPlayer.render();
+			}
+			
 			
 			FPS.tick();
 			Display.update();
@@ -101,6 +98,7 @@ public class TopDown {
 		//Setting up display
 		try {
 			Display.setDisplayMode(new DisplayMode(Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT));
+			Display.setTitle("TDR");
 			Display.create();
 		} catch (LWJGLException e) {
 			System.exit(1);
@@ -121,10 +119,5 @@ public class TopDown {
 	
 	
 	
-	public void drawFPS(){
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		fpsFont.drawString(4, 0, FPS.getFPS(), Color.black);
-		GL11.glDisable(GL11.GL_BLEND);
-	}
+
 }
