@@ -1,13 +1,11 @@
 import java.awt.*;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.*;
 import org.lwjgl.input.Keyboard;
+import org.newdawn.slick.Color;
 
-public class Player extends Entity{
-	public int cubeAmntWidth;  //Amount of cube in the player width  wise
-	public int cubeAmntHeight; //Amount of cube in the player height wise
-	public int cubeWidth;      //Width  of individual cube
-	public int cubeHeight;     //Height of individual cube
+public class Player extends CubeletEntity{
 	public int speed = 5;
 	
 	public boolean isMoveWest = false;
@@ -23,7 +21,7 @@ public class Player extends Entity{
 	public static int KEY_MOVE_SOUTH = Keyboard.KEY_S;
 	
 
-	private ReadableColor playerColor = new org.lwjgl.util.Color(ReadableColor.GREEN);
+	private Color playerColor = Color.green;
 	//CONSTRUCTOR
 	Player(int x, int y, int cubeAmntWidth, int cubeAmntHeight, int cubeWidth, int cubeHeight){
 		this.x = x;
@@ -62,7 +60,8 @@ public class Player extends Entity{
 	
 	public void render(){
 
-		GL11.glColor3ub(playerColor.getRedByte(), playerColor.getGreenByte(), playerColor.getBlueByte());//Set color
+//		GL11.glColor4ub(playerColor.getRedByte(), playerColor.getGreenByte(), playerColor.getBlueByte(), (byte)1);//Set color
+		GL11.glColor3f(playerColor.r, playerColor.g, playerColor.b);
 		GL11.glBegin(GL11.GL_QUADS);
 			GL11.glVertex2i(x, y);
 			GL11.glVertex2i(x + totalWidth, y);
