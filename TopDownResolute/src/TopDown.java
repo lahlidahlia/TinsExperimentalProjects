@@ -6,9 +6,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11; 
 import org.newdawn.slick.Color;
-import org.newdawn.slick.Graphics;
 import org.newdawn.slick.TrueTypeFont;
-import org.newdawn.slick.UnicodeFont;
 
 public class TopDown {
 	public static boolean finished = false;
@@ -102,7 +100,7 @@ public class TopDown {
 	public void init(){
 		//Setting up display
 		try {
-			Display.setDisplayMode(new DisplayMode(Global.SCREEN_HEIGHT, Global.SCREEN_WIDTH));
+			Display.setDisplayMode(new DisplayMode(Global.SCREEN_WIDTH, Global.SCREEN_HEIGHT));
 			Display.create();
 		} catch (LWJGLException e) {
 			System.exit(1);

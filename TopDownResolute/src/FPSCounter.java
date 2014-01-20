@@ -1,4 +1,4 @@
-import org.newdawn.slick.TrueTypeFont;
+
 
 public class FPSCounter {
     public int currentFPS = 0;

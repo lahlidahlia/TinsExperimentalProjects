@@ -21,39 +21,79 @@ public abstract class CubeletEntity extends Entity {
 	public boolean isMoveEast = false;
 	public boolean isMoveNorth = false;
 	public boolean isMoveSouth = false;
+	//Variables that stop the entity from moving if there are some restrictions
+	public boolean canMoveWest = true;
+	public boolean canMoveEast = true;
+	public boolean canMoveNorth = true;
+	public boolean canMoveSouth = true;
 	
-	public void move(){ //Call move() in update() in order to move
-		if(isMoveWest){
+	protected void move(){ //Call move() in update() in order to move
+		if(isMoveWest && canMoveWest){
 			x -= speed;
 			isMoveWest = false;
 		}
-		if(isMoveEast){
+		if(isMoveEast && canMoveEast){
 			x += speed;
 			isMoveEast = false;
 		}
-		if(isMoveNorth){
+		if(isMoveNorth && canMoveNorth){
 			y -= speed;
 			isMoveNorth = false;
 		}
-		if(isMoveSouth){
+		if(isMoveSouth && canMoveSouth){
 			y += speed;
 			isMoveSouth = false;
 		}
 	}
-	
 	//Setter functions for movement variables
-	public void moveWest(){
+	protected void moveWest(){
 		isMoveWest = true;
 	}
-	public void moveEast(){
+	protected void moveEast(){
 		isMoveEast = true;
 	}
-	public void moveNorth(){
+	protected void moveNorth(){
 		isMoveNorth = true;
 	}
 	public void moveSouth(){
 		isMoveSouth = true;
 	}
+	
+	
+	//superSetter functions for checkCollisions
+	protected void checkForCollision(){ //Call in update() before move()
+		canMoveWest = checkWestCollision();
+		canMoveEast = checkEastCollision();
+		canMoveNorth = checkNorthCollision();
+		canMoveSouth = checkSouthCollision();
+	}
+	//Setter functions for checkCollisions. all 4 functions are similar, so only commenting for one
+	protected boolean checkWestCollision(){
+		if(x < 0 + speed){ //Check if about to be offscreen
+			return false;
+		}
+		return true; //True if isn't colliding with anything
+	}
+	protected boolean checkEastCollision(){
+		if(x > Global.SCREEN_WIDTH - speed - totalWidth){
+			return false;
+		}
+		return true;
+	}
+	protected boolean checkNorthCollision(){
+		if(y < 0 + speed){
+			return false;
+		}
+		return true;
+	}
+	protected boolean checkSouthCollision(){
+		if(y > Global.SCREEN_HEIGHT - speed - totalHeight){
+			return false;
+		}
+		return true;
+	}
+	
+
 	
 
 }

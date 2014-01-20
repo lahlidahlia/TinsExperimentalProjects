@@ -78,7 +78,7 @@ public class Enemy extends CubeletEntity{
 	public void chooseAction(){
 		int r = (int) (Math.random() * 50000); //Get a number between 0 and given number
 		int action = r % 1;//Get a random number between 0 and given number (non-inclusive)
-		switch(action){ //Choosing an action, weighted toward do nothing
+		switch(action){ //Choosing an action, currently could only moveRandom()
 		case 0:
 			moveRandom();
 			break;

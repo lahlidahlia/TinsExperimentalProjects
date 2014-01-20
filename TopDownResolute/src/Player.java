@@ -1,7 +1,4 @@
-import java.awt.*;
-
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.*;
 import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.Color;
 
@@ -62,7 +59,9 @@ public class Player extends CubeletEntity{
 	
 	
 	public void update(){
+		checkForCollision();
 		move();
+		System.out.println("X: " + x + "Y: " + y);
 	}
 	
 	
