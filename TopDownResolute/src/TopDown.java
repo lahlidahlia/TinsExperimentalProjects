@@ -27,8 +27,6 @@ public class TopDown {
 	///////////////
 	public void start(){
 		init();
-		
-		
 		FPS = new FPSCounter();
 		mainPlayer = new Player(100, 100, 4, 4, 16, 16);
 		enemy = new Enemy(200, 200, 4, 4, 16, 16);
@@ -46,14 +44,8 @@ public class TopDown {
 			
 			Text.drawText(FPS.getFPS());
 			pollInput();
-			if(enemy != null){
-				enemy.update();
-				enemy.render();
-			}
-			if(mainPlayer != null){
-				mainPlayer.update();
-				mainPlayer.render();
-			}
+			Group.update();
+			Group.render();
 			
 			
 			FPS.tick();

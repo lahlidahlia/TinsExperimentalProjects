@@ -35,6 +35,10 @@ public class Enemy extends CubeletEntity{
 		bBox_botRightY = y + totalHeight;
 		
 		timer = new Timer(); //Creating a new timer
+		
+		Group.Collidables.add(this);
+		Group.Renderables.add(this);
+		Group.Updatables.add(this);
 	}
 	
 	public void render(){

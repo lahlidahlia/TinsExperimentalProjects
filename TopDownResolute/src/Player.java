@@ -24,6 +24,10 @@ public class Player extends CubeletEntity{
 		
 		totalWidth  = cubeAmntWidth * cubeWidth;
 		totalHeight = cubeAmntHeight * cubeHeight;
+		
+		Group.Renderables.add(this);
+		Group.Updatables.add(this);
+		Group.Collidables.add(this);
 	}
 	
 	
