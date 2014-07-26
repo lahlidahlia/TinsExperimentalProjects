@@ -1,0 +1,7 @@
+name: Pluginss
+main: io.github.tinlun123.Pluginss.Pluginss
+version: 0.1
+
+commands:
+  ping:
+  unleashTheDoges:
